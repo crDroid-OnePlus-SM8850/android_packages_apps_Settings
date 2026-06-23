@@ -135,6 +135,7 @@ android_library {
         "androidx.appsearch_appsearch-builtin-types",
         "com.android.extensions.appfunctions.impl",
         "device-state-schema",
+        "vendor.oplus.hardware.touch-V2-java",
 
         // Lineage dependencies
         "org.lineageos.platform.internal",
