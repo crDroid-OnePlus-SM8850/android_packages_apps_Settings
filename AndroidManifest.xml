@@ -6240,6 +6240,9 @@
             <intent-filter>
                 <action android:name="com.crdroid.settings.action.DONATE_NUDGE" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="com.crdroid.settings.action.DONATE_DISMISS_FOREVER" />
+            </intent-filter>
         </receiver>
 
         <!-- Provide direct entry into Dev settings - Running Services -->
