@@ -19,6 +19,7 @@ package com.android.settings.display;
 import static android.provider.Settings.System.MIN_REFRESH_RATE;
 
 import android.content.Context;
+import android.os.SystemProperties;
 import android.provider.Settings;
 import android.view.Display;
 
@@ -38,6 +39,11 @@ public class MinRefreshRatePreferenceController extends BasePreferenceController
         implements Preference.OnPreferenceChangeListener {
 
     private static final String KEY_MIN_REFRESH_RATE = "min_refresh_rate";
+
+    private static final int LTPO_IDLE_REFRESH_RATE = 1;
+    private static final int LTPO_LOW_REFRESH_RATE = 30;
+    private static final int NO_MIN_REFRESH_RATE = 0;
+    private static final String OPLUS_LTPO_MIN_FPS_PROPERTY = "persist.sys.oplus_ltpo_min_fps";
 
     private ListPreference mListPreference;
 
@@ -60,6 +66,10 @@ public class MinRefreshRatePreferenceController extends BasePreferenceController
                     mValues.add(String.format(Locale.US, "%.02f", m.getRefreshRate()));
                 }
             }
+            mEntries.add(LTPO_LOW_REFRESH_RATE + "Hz");
+            mValues.add(String.format(Locale.US, "%.02f", (float) LTPO_LOW_REFRESH_RATE));
+            mEntries.add(LTPO_IDLE_REFRESH_RATE + "Hz");
+            mValues.add(String.format(Locale.US, "%.02f", (float) NO_MIN_REFRESH_RATE));
         }
     }
 
@@ -91,14 +101,23 @@ public class MinRefreshRatePreferenceController extends BasePreferenceController
         if (index < 0) index = 0;
         mListPreference.setValueIndex(index);
         mListPreference.setSummary(mListPreference.getEntries()[index]);
+
+        setOplusLtpoMinFps(currentValue);
     }
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
-        Settings.System.putFloat(mContext.getContentResolver(), MIN_REFRESH_RATE,
-                Float.valueOf((String) newValue));
+        final float minRefreshRate = Float.valueOf((String) newValue);
+        Settings.System.putFloat(mContext.getContentResolver(), MIN_REFRESH_RATE, minRefreshRate);
+        setOplusLtpoMinFps(minRefreshRate);
         updateState(preference);
         return true;
+    }
+
+    private void setOplusLtpoMinFps(float minRefreshRate) {
+        SystemProperties.set(OPLUS_LTPO_MIN_FPS_PROPERTY,
+                String.valueOf(minRefreshRate >= LTPO_LOW_REFRESH_RATE
+                        ? (int) minRefreshRate : NO_MIN_REFRESH_RATE));
     }
 
 }
