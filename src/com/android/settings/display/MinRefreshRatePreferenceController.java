@@ -19,6 +19,7 @@ package com.android.settings.display;
 import static android.provider.Settings.System.MIN_REFRESH_RATE;
 
 import android.content.Context;
+import android.os.SystemProperties;
 import android.provider.Settings;
 import android.view.Display;
 
@@ -38,6 +39,8 @@ public class MinRefreshRatePreferenceController extends BasePreferenceController
         implements Preference.OnPreferenceChangeListener {
 
     private static final String KEY_MIN_REFRESH_RATE = "min_refresh_rate";
+    private static final String ALWAYS_ON_LTPO_PROPERTY =
+            "ro.oplus.display.ltpo_always_on";
 
     private ListPreference mListPreference;
 
@@ -65,6 +68,9 @@ public class MinRefreshRatePreferenceController extends BasePreferenceController
 
     @Override
     public int getAvailabilityStatus() {
+        if (SystemProperties.getBoolean(ALWAYS_ON_LTPO_PROPERTY, false)) {
+            return UNSUPPORTED_ON_DEVICE;
+        }
         return mEntries.size() > 1 ? AVAILABLE : UNSUPPORTED_ON_DEVICE;
     }
 

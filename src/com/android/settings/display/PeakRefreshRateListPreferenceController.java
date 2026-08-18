@@ -20,6 +20,7 @@ package com.android.settings.display;
 import android.content.Context;
 import android.hardware.display.DisplayManager;
 import android.os.Handler;
+import android.os.SystemProperties;
 import android.provider.DeviceConfig;
 import android.provider.Settings;
 import android.util.Log;
@@ -48,6 +49,8 @@ public class PeakRefreshRateListPreferenceController extends BasePreferenceContr
 
     private static final String TAG = "PeakRefreshRatePrefCtr";
     private static final float INVALIDATE_REFRESH_RATE = -1f;
+    private static final String ALWAYS_ON_LTPO_PROPERTY =
+            "ro.oplus.display.ltpo_always_on";
 
     private final Handler mHandler;
     private final IDeviceConfigChange mOnDeviceConfigChange;
@@ -106,6 +109,9 @@ public class PeakRefreshRateListPreferenceController extends BasePreferenceContr
 
     @Override
     public int getAvailabilityStatus() {
+        if (SystemProperties.getBoolean(ALWAYS_ON_LTPO_PROPERTY, false)) {
+            return UNSUPPORTED_ON_DEVICE;
+        }
         if (mContext.getResources().getBoolean(R.bool.config_show_peak_refresh_rate_switch)) {
             return AVAILABLE;
         } else {
